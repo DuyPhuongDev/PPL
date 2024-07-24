@@ -1,0 +1,5 @@
+
+                    inc: function void (out x: float, incr: integer){
+                        x = x + incr;
+                    }
+                

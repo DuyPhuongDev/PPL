@@ -1,0 +1,6 @@
+ main: function void(){
+                        if((a > b) && (c < d) || (e == f)) {
+                            printString("complex condition");
+                        }
+                    }
+                

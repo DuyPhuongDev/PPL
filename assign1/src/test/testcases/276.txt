@@ -1,0 +1,4 @@
+ foo: function string() {
+                        return "hello";
+                    }
+                

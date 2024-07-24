@@ -1,0 +1,5 @@
+ main: function void(){
+                        while(1)
+                            sleep(2000);       
+                    }
+                

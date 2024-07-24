@@ -1,0 +1,7 @@
+
+                    arr: array[5] of string;
+                    main: function void(arr: array[5] of string) {
+                        arr[0] = "hello";
+                        arr[1] = "hi";
+                    }
+                

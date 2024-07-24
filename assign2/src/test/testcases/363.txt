@@ -1,0 +1,5 @@
+
+            main : function void(x: float) {    
+                    a = x[y[1,2],5*6] + 10000 ;
+                }   
+        

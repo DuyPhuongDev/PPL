@@ -1,0 +1,7 @@
+
+        a: float;
+        b: function string (a: integer, b: float, c: string) inherit c{
+            super();
+        }
+        c: function void (a: string){}
+        

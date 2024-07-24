@@ -1,0 +1,6 @@
+
+            main : function void() {    
+                _Kien_ : float = 1>3||true&&false;
+                a: array[1,10] of integer;
+            }
+        

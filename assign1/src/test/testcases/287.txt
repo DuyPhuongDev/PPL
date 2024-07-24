@@ -1,0 +1,6 @@
+ main: function void(){
+                        for(i = foo(1, 2), i < 10, i + 1) {
+                            printInteger(i);
+                        }
+                    }
+                

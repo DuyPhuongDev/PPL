@@ -1,0 +1,11 @@
+ a, b, c: integer;
+                    max: function integer(a: integer, b: integer, c: integer) {
+                        max: integer;
+                        if((a>b) && (a>c)) max=a;
+                        else {
+                            if(b>c) max = b;
+                            else max = c;
+                        }
+                        return max;
+                    }
+                

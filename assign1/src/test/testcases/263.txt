@@ -1,0 +1,5 @@
+ main: function void(){
+                        a: array [5] of integer;
+                        a[0] = 1;
+                    }
+                

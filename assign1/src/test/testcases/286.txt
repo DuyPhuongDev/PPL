@@ -1,0 +1,6 @@
+ main: function void(){
+                        while(foo(1, 2)) {
+                            printString("function call in condition");
+                        }
+                    }
+                

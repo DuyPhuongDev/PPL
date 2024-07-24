@@ -1,0 +1,1 @@
+ int y = 5; // assign 5 to var y 

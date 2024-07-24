@@ -1,0 +1,6 @@
+
+                    main: function void(n: integer) {
+                        str: string = "this is func";
+                        if(n<5) printString(str);
+                    }
+                

@@ -1,0 +1,9 @@
+
+            main : function void() {
+                x:string = "Quynh Anh";
+                a : array[1,1] of string;
+                a[2*2-4,1-1] = "xinh dep";
+                y: string = a[0,0];
+                z:string = a::b;
+            }
+        

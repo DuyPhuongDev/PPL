@@ -1,0 +1,4 @@
+x, y, z: integer = 1, 2, 3;
+        k,l: string = "Trung","Kien";
+        m,n: boolean = true, false;
+        

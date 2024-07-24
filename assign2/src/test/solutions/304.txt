@@ -1,0 +1,4 @@
+Program([
+	VarDecl(tes1, ArrayType([3, 4], StringType))
+	VarDecl(test2, ArrayType([3, 4], StringType))
+])

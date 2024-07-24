@@ -1,0 +1,6 @@
+
+                    main: function void() {
+                        a: boolean;
+                        a := 5;
+                    }
+                

@@ -1,0 +1,5 @@
+ main: function void(){
+                        count: integer = 0;
+                        for(count, count!=10, count+2) preventDefault();          
+                    }
+                

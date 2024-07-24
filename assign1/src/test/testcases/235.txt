@@ -1,0 +1,7 @@
+ main: function void(){
+                        scala: int = 5;
+                        for(scala, scala>0, scala-1){
+                            printInteger(scala);
+                        }        
+                    }
+                

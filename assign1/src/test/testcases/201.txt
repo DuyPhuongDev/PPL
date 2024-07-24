@@ -1,0 +1,3 @@
+a: float;
+                main: function void(a: float){
+                    a = 1_234.567;}

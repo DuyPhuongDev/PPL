@@ -1,0 +1,9 @@
+Program([
+	VarDecl(x, IntegerType, IntegerLit(1))
+	VarDecl(y, IntegerType, IntegerLit(2))
+	VarDecl(z, IntegerType, IntegerLit(3))
+	VarDecl(k, StringType, StringLit(Trung))
+	VarDecl(l, StringType, StringLit(Kien))
+	VarDecl(m, BooleanType, BooleanLit(True))
+	VarDecl(n, BooleanType, BooleanLit(False))
+])

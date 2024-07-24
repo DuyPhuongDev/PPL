@@ -1,0 +1,1 @@
+b: function string (a: integer, b: float, c: string) inherit c{}

@@ -1,0 +1,6 @@
+ main: function void(){
+                        if(foo(1, 2)) {
+                            printString("function call in condition");
+                        }
+                    }
+                

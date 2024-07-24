@@ -1,0 +1,6 @@
+ a, b: integer;
+                    main: function void(a: integer, b: integer) {
+                        if(a!=b) preventDefault();
+                        else return;
+                    }
+                

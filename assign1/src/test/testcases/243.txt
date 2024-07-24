@@ -1,0 +1,6 @@
+ main: function void(){
+                        if(FALSE) printString("false");
+                        else if(TRUE) printString("true");
+                        else printString("none");          
+                    }
+                

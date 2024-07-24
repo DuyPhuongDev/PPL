@@ -1,0 +1,6 @@
+ main: function void(){
+                        while(TRUE)
+                            str="Hello world!";
+                            printString(str); 
+                    }
+                

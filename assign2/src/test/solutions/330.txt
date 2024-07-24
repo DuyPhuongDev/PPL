@@ -1,0 +1,4 @@
+Program([
+	VarDecl(arr, ArrayType([2, 3], FloatType))
+	FuncDecl(test, IntegerType, [OutParam(arr, ArrayType([2, 3], FloatType))], None, BlockStmt([VarDecl(arr, ArrayType([2, 3], FloatType)), AssignStmt(ArrayCell(arr, [IntegerLit(0), IntegerLit(1)]), BinExpr(-, BinExpr(+, BinExpr(*, IntegerLit(1), IntegerLit(2)), FloatLit(1.2)), IntegerLit(1)))]))
+])

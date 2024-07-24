@@ -1,0 +1,4 @@
+ main: function integer(){
+                        return foo(1, 2);
+                    }
+                

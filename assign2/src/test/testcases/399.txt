@@ -1,0 +1,8 @@
+
+            main : function void() { 
+                arr : array[2,2] of integer;
+                arr[1,3] = 6;
+                x: integer = arr[1, 3];
+                printInteger(x);
+            }
+        

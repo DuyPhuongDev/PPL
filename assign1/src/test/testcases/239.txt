@@ -1,0 +1,6 @@
+ main: function void(){
+                        while(FLASE):
+                            i: float = 2.1;
+                            writeFloat(i);      
+                    }
+                

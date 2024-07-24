@@ -1,0 +1,9 @@
+
+            /* func to setCount
+                input: none
+                output: none
+                */
+                const [count, setCount] = useState(5);
+                setCount(c => c+1);
+                console.log(count);
+            

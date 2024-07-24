@@ -1,0 +1,6 @@
+
+                    main: function void() {
+                        id: integer;
+                        id = 1_343_34;
+                    }
+                

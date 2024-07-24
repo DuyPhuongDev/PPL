@@ -1,0 +1,4 @@
+ foo: function boolean() {
+                        return TRUE;
+                    }
+                

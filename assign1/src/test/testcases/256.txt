@@ -1,0 +1,6 @@
+ main: function void(){
+                        while((a > b) && (b < c)) {
+                            foo();
+                        }
+                    }
+                

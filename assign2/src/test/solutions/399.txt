@@ -1,0 +1,3 @@
+Program([
+	FuncDecl(main, VoidType, [], None, BlockStmt([VarDecl(arr, ArrayType([2, 2], IntegerType)), AssignStmt(ArrayCell(arr, [IntegerLit(1), IntegerLit(3)]), IntegerLit(6)), VarDecl(x, IntegerType, ArrayCell(arr, [IntegerLit(1), IntegerLit(3)])), CallStmt(printInteger, Id(x))]))
+])

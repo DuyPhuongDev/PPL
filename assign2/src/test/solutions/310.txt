@@ -1,0 +1,5 @@
+Program([
+	FuncDecl(voidA, IntegerType, [Param(n, IntegerType)], None, BlockStmt([ReturnStmt(BinExpr(%, Id(n), IntegerLit(10)))]))
+	FuncDecl(voidB, VoidType, [OutParam(n, IntegerType), Param(delta, IntegerType)], None, BlockStmt([AssignStmt(Id(n), BinExpr(+, Id(n), FuncCall(voidA, [Id(delta)])))]))
+	FuncDecl(main, VoidType, [], None, BlockStmt([VarDecl(delta, IntegerType, IntegerLit(5)), CallStmt(voidB, Id(x), Id(delta)), CallStmt(printInteger, Id(x))]))
+])

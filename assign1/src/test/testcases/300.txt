@@ -1,0 +1,4 @@
+ main: function void(){
+                        foo(1, 2, 3, 4, 5);
+                    }
+                

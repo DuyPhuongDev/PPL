@@ -1,0 +1,5 @@
+
+                __str1 = "abc"
+                __str2 = "def"
+                __str1 + __str2 = "abcdef"
+                

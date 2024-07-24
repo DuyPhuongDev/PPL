@@ -1,0 +1,6 @@
+Program([
+	VarDecl(x, IntegerType)
+	VarDecl(y, FloatType)
+	VarDecl(z, BooleanType)
+	VarDecl(t, StringType)
+])

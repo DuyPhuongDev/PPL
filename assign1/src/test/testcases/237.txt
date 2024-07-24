@@ -1,0 +1,8 @@
+ main: function void(){
+                        count: integer = 10;
+                        while(count>0){
+                            printInteger(count);
+                            count-1;   
+                        }    
+                    }
+                

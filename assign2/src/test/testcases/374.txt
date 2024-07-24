@@ -1,0 +1,6 @@
+
+            main : function void() {    
+                    x = y || z || t && x;
+                    x = y && z && t && z;
+            }
+        

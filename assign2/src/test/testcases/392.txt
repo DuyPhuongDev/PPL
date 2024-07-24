@@ -1,0 +1,12 @@
+
+            main: function void () {
+                x : string = "";
+                n : integer = 5;
+                do{
+                    x = x::"a";
+                    n = n - 1 ;
+                }
+                while (n>=0);
+                printString(x);
+            }
+        

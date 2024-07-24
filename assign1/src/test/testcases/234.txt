@@ -1,0 +1,7 @@
+ length: function integer(str: string){
+                        length: integer=0;
+                        for(i:auto=0;i<32;i+3){
+                            length = length + i;
+                        }           
+                    }
+                

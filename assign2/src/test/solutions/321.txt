@@ -1,0 +1,3 @@
+Program([
+	FuncDecl(test, IntegerType, [OutParam(x, IntegerType), Param(data, StringType)], None, BlockStmt([VarDecl(c, IntegerType)]))
+])

@@ -1,0 +1,8 @@
+
+            main : function void() {
+                x,y : integer = 100, 1*2*4-6;
+                if (x < y) x = 9 + 3; 
+                printInteger(x);
+                printInteger(y);
+            }
+        
