@@ -22,19 +22,23 @@ class FuncSymbol(Symbol):
     def __init__(self,name: str, params: List[ParamSymbol], returnTyp: Type, inherit: str or None) -> None:
         self.name = name
         self.params = params
-        self.type = returnTyp
+        self.typ = returnTyp
         self.inherit = inherit
 
 class GlobalFunc(Symbol):
     def __init__(self, name: str, param: List[ParamSymbol], returnTyp: Type) -> None:
         self.name = name
-        self.param = param
+        self.params = param
         self.typ = returnTyp
 
 class GetPrototype(Visitor):
+    def __init__(self, ast) -> None:
+        self.ast = ast
     def visitProgram(self, ast, param):
+        env = []
         for decl in ast.decls:
-            self.visit(decl, param)
+            self.visit(decl, env)
+        return env
     
     def visitVarDecl(self, ast, param):
         param += [VarSymbol(ast.name, ast.typ)]
@@ -46,11 +50,20 @@ class GetPrototype(Visitor):
     def visitParamDecl(self, ast, param):
         param += [ParamSymbol(ast.name, ast.typ, ast.inherit, ast.out)]
         return param
-        
+     
+class InferType():
+    @staticmethod
+    def infer(name, typ, param):
+        for env in param:
+            found = Utils().lookup(name, env,lambda x: x.name)
+            if found:
+                found.typ = typ
+                return typ
+               
 class StaticChecker(Visitor):
     
     def check(self):
-        return self.visitProgram(self.ast, self.env)
+        return self.visitProgram(self.ast, [])
 
     def __init__(self, ast):
         self.ast = ast
@@ -64,10 +77,12 @@ class StaticChecker(Visitor):
             GlobalFunc("readString", [], StringType()),
             GlobalFunc("printString", [ParamSymbol("", StringType())], VoidType()),
             GlobalFunc("super", [], VoidType()),
-            GlobalFunc("preventDefault", [], VoidType()),
+            GlobalFunc("preventDefault", [], VoidType())
         ]]
         self.curr_var = None #luu bien hien tai dang visit
         self.prototype = [] # luu moi truong so bo cua chuong trinh
+        self.curr_func = None # luu name cua function hien tai dang duoc vieng tham
+        self.isfor = False
     
     # type
     def visitIntegerType(self, ast, param): return IntegerType()
@@ -81,8 +96,15 @@ class StaticChecker(Visitor):
     ######  Expr  #####
     def visitBinExpr(self, ast, param):
         ltype = self.visit(ast.left, param)
+        #ltype = l.typ if type(ast.left) is Id else l 
         rtype = self.visit(ast.right, param)
-        if ast.op in ['-', '+', '*', '/']:
+        #rtype = r.typ if type(ast.right) is Id else r
+        if type(ltype) is AutoType:
+            if type(rtype) is AutoType: raise TypeMismatchInExpression(ast)
+            else: ltype = InferType.infer(ast.left.name,rtype,param)
+        else:
+            if type(rtype) is AutoType: rtype = InferType.infer(ast.right.name, ltype, param)
+        if ast.op in ['-', '+', '*', '/']:  
             if type(ltype) is IntegerType and type(rtype) is IntegerType:
                 return IntegerType() if ast.op != '/' else FloatType()
             if (type(ltype),type(rtype)) in [(IntegerType, FloatType), (FloatType, IntegerType), (FloatType, FloatType)]:
@@ -116,6 +138,7 @@ class StaticChecker(Visitor):
             
     def visitUnExpr(self, ast, param):
         etype = self.visit(ast.val, param)
+        #etype = e.typ if type(ast.val) is Id else e
         if ast.op == '-':
             if type(etype) in [IntegerType, FloatType]:
                 return etype
@@ -128,13 +151,15 @@ class StaticChecker(Visitor):
     def visitId(self, ast, param):
         # return type of id if not found => undeclared
         """ bien dang khai bao kh dc sd x: integer = x + 3; => error """
+        #print('visit Id')
+        ##print([list(map(lambda x: (x.name, type(x)), i)) for i in param])
         if self.curr_var is not None and self.curr_var == ast.name:
             raise Undeclared(Identifier(), ast.name)
         found = None
-        for syms in param:
-            sym = Utils().lookup(ast.name, syms, lambda x: x.name)
-            if sym is not None and type(sym) is VarDecl:
-                isfound = sym
+        for env in param:
+            sym = Utils().lookup(ast.name, env, lambda x: x.name)
+            if sym is not None and type(sym) in [VarSymbol, ParamSymbol]:
+                found = sym
                 break
         if found is None:
             raise Undeclared(Identifier(), ast.name)
@@ -150,38 +175,112 @@ class StaticChecker(Visitor):
 
     ##### Statements #####
     def visitAssignStmt(self, ast, param):
+        #print('visit assignStmt')
+        #print("current function: ", self.curr_func)
         lhs = self.visit(ast.lhs, param)
         rhs = self.visit(ast.rhs, param)
+        #rhstyp = rhs.typ if type(ast.rhs) is Id else rhs
+        if type(lhs) is AutoType:
+            if type(rhs) is AutoType: raise TypeMismatchInStatement(ast)
+            lhs = InferType.infer(ast.lhs.name, rhs, param)
         if type(lhs) in [ArrayType, VoidType]:
             raise TypeMismatchInStatement(ast)
+        if type(rhs) is AutoType: rhs = InferType.infer(ast.rhs.name, lhs, param)
         if type(lhs) != type(rhs): raise TypeMismatchInStatement(ast)
+        ##print(list(map(lambda x: (x.name, x.typ), param[1])))
+        return lhs # tra ve type cua lhs
     def visitBlockStmt(self, ast, param):
+        #print("visit blockstmt")
         # tao moi truong local cho new scope
         local = [[]] + param
+        ##print(list(map(lambda x: x.name, param[-1])))
         # check blockscope cua function => true: xu ly super, preventDefautl
-        func = param[-1][-1]
+        ##print(list(map(lambda x: x.name, param[1])))
+        func = param[1][-1]
+        #print(func.name, 'is function' if type(func) is FuncSymbol else 'is not function')
+        ##print(list(map(lambda x: x.name, param[0])))
         if type(func) is FuncSymbol and func.inherit != None:
             parent = Utils().lookup(func.inherit, list(filter(lambda x: type(x) is FuncSymbol, self.prototype)),lambda x: x.name)
             if parent is None: raise Undeclared(Function(), func.inherit)
             first = ast.body[0] if len(ast.body) != 0 else None # first stmt in body of function
-            if not first or type(first) != CallStmt:
+            if not first or type(first) != CallStmt or first.name not in ['super', 'preventDefault']:
                 # call super()
                 if len(parent.params) != 0: raise InvalidStatementInFunction(func.name)
-            if first.name not in ['super', 'preventDefault']: raise InvalidStatementInFunction(func.name)
-        
-        for stmt in ast.body:
-            self.visit(stmt, local)
             
+        for stmt in ast.body:
+            #print(stmt)
+            self.visit(stmt, local)
 
-    def visitIfStmt(self, ast, param): pass
-    def visitForStmt(self, ast, param): pass
-    def visitWhileStmt(self, ast, param): pass
-    def visitDoWhileStmt(self, ast, param): pass
-    def visitBreakStmt(self, ast, param): pass
+    def visitIfStmt(self, ast, param):
+        #print("visit ifstmt")
+        # output cua expr cond must be boolean
+        cond = self.visit(ast.cond, param)
+        if type(cond) is not BooleanType: raise TypeMismatchInStatement(ast)
+        # tao scope cho if stmt
+        local = [[]] + param
+        self.visit(ast.tstmt, local)
+        if ast.fstmt: self.visit(ast.stmt, local)
+        
+    def visitForStmt(self, ast, param):
+        #print("visit for stmt")
+        local = [[]] + param
+        local[0] += [VarSymbol(ast.init.lhs.name,AutoType())]
+        init = self.visit(ast.init, local)
+        if type(init) is not IntegerType: raise TypeMismatchInStatement(ast)
+        cond = self.visit(ast.cond, local)
+        if type(cond) is not BooleanType: raise TypeMismatchInStatement(ast)
+        updt = self.visit(ast.upd, local)
+        if type(updt) is not IntegerType: raise TypeMismatchInStatement(ast)
+        self.visit(ast.stmt, local)
+    def visitWhileStmt(self, ast, param): 
+        #print("visit While stmt")
+        if type(self.visit(ast.cond, param)) is not BooleanType: raise TypeMismatchInStatement(ast)
+        self.visit(ast.stmt, param)
+    def visitDoWhileStmt(self, ast, param): 
+        #print("visit do-while stmt")
+        self.visit(ast.stmt, param)
+        if type(self.visit(ast.cond, param)) is not BooleanType: raise TypeMismatchInStatement(ast)
+    def visitBreakStmt(self, ast, param):pass
+        #print("break")
     def visitContinueStmt(self, ast, param): pass
+        #print("continue")
     def visitReturnStmt(self, ast, param): pass
-    def visitCallStmt(self, ast, param): pass
-
+        #print("return stmt")
+    def visitCallStmt(self, ast, param): 
+        print("visit callstmt")
+        # check callfunc is declared
+        # with super
+        # get list pram of funccall, callstmt
+        args = [self.visit(x, param) for x in ast.args]
+        if ast.name == 'super':
+            parentF = Utils().lookup(self.curr_func.inherit, self.prototype, lambda x: x.name)
+            if len(args) < len(parentF.params): raise TypeMismatchInExpression(None)
+            if len(args) > len(parentF.params): raise TypeMismatchInExpression(ast.args[len(parentF.params)])              
+            for i in range(len(args)):
+                if type(parentF.params[i].typ) is AutoType:
+                    parentF.params[i].typ = args[i]
+                print(type(args[i]), '-', type(parentF.params[i].typ))
+                if type(args[i]) != type(parentF.params[i].typ): raise TypeMismatchInExpression(ast.args[i])
+            
+        else:
+            callfunc = Utils().lookup(ast.name, param[-1], lambda x: x.name)
+            if callfunc is None:
+                callfunc = Utils().lookup(ast.name, self.prototype, lambda x: x.name)
+                if callfunc is None or type(callfunc) is not FuncSymbol: raise Undeclared(FuncSymbol(), ast.name)
+            else: 
+                if type(callfunc) not in [FuncSymbol, GlobalFunc]: raise Undeclared(Function(), ast.name)
+            
+            
+            #print(args)
+            #print(callfunc.params)
+            # check length cua 2 func
+            if(len(callfunc.params) != len(args)): raise TypeMismatchInStatement(ast)
+            # check type
+            for i in range(len(args)):
+                if type(callfunc.params[i].typ) is AutoType:
+                    callfunc.params[i].typ = args[i]
+                if type(callfunc.params[i].typ) is not type(args[i]): raise TypeMismatchInStatement(ast)
+            
     ##### Declared #####
     def visitVarDecl(self, ast, param):
         if Utils().lookup(ast.name, param[0], lambda x: x.name) is not None:
@@ -217,7 +316,6 @@ class StaticChecker(Visitor):
         param += [ParamSymbol(ast.name,ast.typ, ast.inherit, ast.out)]
         return param
     def visitFuncDecl(self, ast, param): 
-        # xu ly inhertit => skip now
         # check xem co redeclare
         # param[-1]: global scope
         funcsym = Utils().lookup(ast.name,param[-1], lambda x: x.name)
@@ -227,7 +325,7 @@ class StaticChecker(Visitor):
         
         if ast.inherit != None:
             # co ke thua => tim func cha
-            #print(list(map(lambda x: x.name,filter(lambda x: type(x) is FuncSymbol, self.prototype))))
+            ##print(list(map(lambda x: x.name,filter(lambda x: type(x) is FuncSymbol, self.prototype))))
             parentFunc = Utils().lookup(ast.inherit, list(filter(lambda x: type(x) is FuncSymbol, self.prototype)), lambda x: x.name)
             if parentFunc is None: raise Undeclared(Function(), ast.inherit)
             # tim thay ham cha trong global scope => get paramdecl has inherit keyword
@@ -239,24 +337,29 @@ class StaticChecker(Visitor):
         for x in ast.params:
             params = self.visit(x, params)
         local_param = params[idxInherit:]
-        func = FuncSymbol(ast.name, local_param, ast.return_type, ast.inherit)
+        #func = FuncSymbol(ast.name, local_param, ast.return_type, ast.inherit)
+        func = Utils().lookup(ast.name, self.prototype, lambda x: x.name)
         param[-1] += [func]
         # get all param cua func cha dua vao local
         local = [params] + param # scope cua ham
         # vieng tham body
+        self.curr_func = func
         self.visit(ast.body, local)
+        self.curr_func = None
 
     ##### Program #####
     def visitProgram(self, ast, param):
         # first get prototype 
-        GetPrototype().visit(ast, self.prototype)
+        self.prototype = GetPrototype(self.ast).visit(self.ast, param)
         print(list(map(lambda x: x.name if type(x) is VarSymbol or type(x) is GlobalFunc else f'func {x.name}({list(map(lambda y: (y.name, y.typ), x.params))})', self.prototype)))
-        
         for decl in ast.decls:
-            self.visit(decl,param)
+            self.visit(decl,self.env)
+        
+        print(list(map(lambda x: x.name if type(x) is VarSymbol or type(x) is GlobalFunc else f'func {x.name}({list(map(lambda y: (y.name, y.typ), x.params))})', self.env[0])))
+        
         ismain = False
         #print(list(map(lambda x: x.name, param[0])))
-        for func in param[0]:
+        for func in self.env[0]:
             if type(func) is FuncSymbol and func.name == 'main' and type(func.type) is VoidType and func.params == []:
                 ismain = True
                 break

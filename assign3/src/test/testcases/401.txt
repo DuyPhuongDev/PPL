@@ -1,7 +1,10 @@
 
-        a: float;
-        b: function string (a: integer, b: float, c: string) inherit c{
-            super();
+        x: float;
+        
+        b: function string (a: auto, b: float, c: string) inherit c{
+            //super("a", 5);
+            preventDefault();
+            c();
         }
-        c: function void (a: string){}
+        c: function void (o: string, m: integer){}
         
