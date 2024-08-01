@@ -1,7 +1,10 @@
 
-        foo: function void() inherit ain{
-            super(14);        
+        foo: function void() inherit bar {
+            super(10);
+            x: integer = 1;
         }
-        ain:function void (inherit y: auto) {
-            f: array[3] of float;
+        bar: function void(x: integer) {}
+        main: function void() {
+            foo();
         }
+        

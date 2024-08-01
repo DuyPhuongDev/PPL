@@ -1,0 +1,8 @@
+
+        foo: function auto(x: integer){
+            y: float = bar();
+        }
+        bar: function void (){
+        }
+        main: function void(){}
+    

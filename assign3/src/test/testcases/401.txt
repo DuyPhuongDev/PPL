@@ -1,7 +1,1 @@
-
-        x: boolean;
-        bar: function auto(){
-            if(x) return 1;
-            return 1.0;
-        }
-        
+x: float = 1.555;

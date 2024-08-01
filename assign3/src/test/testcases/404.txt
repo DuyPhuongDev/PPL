@@ -1,8 +1,1 @@
-
-        foo: function void() inherit ain{
-            super(14);        
-        }
-        ain:function void (inherit y: auto) {
-            f: array[3] of float;
-            f[4.3] = 1;
-        }
+x: auto = false;

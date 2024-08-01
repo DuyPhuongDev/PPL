@@ -1,0 +1,7 @@
+
+        foo: function auto(){}
+        fact : function integer (n : integer) {
+            n = readInteger();
+        }
+        main: function void(){}
+    

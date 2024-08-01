@@ -84,6 +84,8 @@ class StaticChecker(Visitor):
         self.curr_func = None # luu name cua function hien tai dang duoc vieng tham
         self.inloop = []
         self.returned = False
+        self.curr_arr = None
+        self.arrflag = False
     
     # type
     def visitIntegerType(self, ast, param): return IntegerType()
@@ -96,6 +98,8 @@ class StaticChecker(Visitor):
 
     ######  Expr  #####
     def visitBinExpr(self, ast, param):
+        #print('visit bin')
+        #print(ast.left)
         ltype = self.visit(ast.left, param)
         #ltype = l.typ if type(ast.left) is Id else l 
         rtype = self.visit(ast.right, param)
@@ -175,11 +179,16 @@ class StaticChecker(Visitor):
         if not found: raise Undeclared(Identifier(), ast.name)
         if type(found.typ) is not ArrayType: raise TypeMismatchInExpression(ast)
         # dimension must be integer
-        dimentyps = [self.visit(x, param) for x in ast.cell]
-        #print(dimentyps)
-        for typ in dimentyps:
+        #dimentyps = [self.visit(x, param) for x in ast.cell]
+        dimentyps = ast.cell
+        for dimen in dimentyps:
+            typ = self.visit(dimen, param)
             if type(typ) is not IntegerType: raise TypeMismatchInExpression(ast)
         if len(found.typ.dimensions)<len(dimentyps): raise TypeMismatchInExpression(ast)
+        if len(found.typ.dimensions)>len(dimentyps): 
+            newdimen = found.typ.dimensions[len(dimentyps):]
+            return ArrayType(newdimen, found.typ.typ)
+            
         return found.typ.typ
             
     def visitIntegerLit(self, ast, param): return IntegerType()
@@ -189,27 +198,55 @@ class StaticChecker(Visitor):
     
     def visitArrayLit(self, ast, param):
         #print("visit arraylit")
+        if not self.arrflag:
+            self.curr_arr = ast
+            self.arrflag = True
         exprs = [self.visit(x, param) for x in ast.explist]
         #print(exprs)
         # get first element to typ of array
         first = exprs[0] if len(exprs) else None
         if not first: return AutoType()
+        flag = False # co lenh xu ly int/float
+        typlist = [first if type(first) is not ArrayType else first.typ]
         for i in range(1,len(exprs)):
-            if type(exprs[i]) is not type(first): raise IllegalArrayLiteral(ast)
+            #typlist += [exprs[i] if type(exprs[i]) is not ArrayType else exprs[i].typ]
+            if type(first) in [IntegerType, FloatType] and type(exprs[i]) in [IntegerType, FloatType]:
+                typlist += [exprs[i]]
+                continue
+            if type(exprs[i]) is not type(first): raise IllegalArrayLiteral(self.curr_arr)
             if type(first) is ArrayType:
                 # check dimen + typ of element
-                if first.dimensions != exprs[i].dimensions: raise IllegalArrayLiteral(ast)
-        if type(first) is ArrayType:
-            #print(ArrayType([len(exprs)] + first.dimensions, first.typ))
-            return ArrayType([len(exprs)] + first.dimensions, first.typ)
+                if type(first.typ) in [IntegerType, FloatType] and type(exprs[i].typ) in [IntegerType, FloatType]:
+                    typlist += [exprs[i].typ]
+                if first.dimensions != exprs[i].dimensions: raise IllegalArrayLiteral(self.curr_arr)
+                if type(first.typ) is not type(exprs[i].typ): raise IllegalArrayLiteral(self.curr_arr)
         
-        #print(ArrayType([len(exprs)], first))
-        return ArrayType([len(exprs)], first)
+        for x in typlist:
+            if type(x) is FloatType:
+                flag = True
+                break
+        
+        if type(first) is ArrayType:
+            for x in typlist:
+                if type(x) is FloatType:
+                    flag = True
+                    break
+            #print(ArrayType([len(exprs)] + first.dimensions, first.typ if not flag else FloatType()))
+            return ArrayType([len(exprs)] + first.dimensions, first.typ if not flag else FloatType())
+        
+        #print(ArrayType([len(exprs)], first if not flag else FloatType()))
+        return ArrayType([len(exprs)], first if not flag else FloatType())
         
     
     def visitFuncCall(self, ast, param):
         #print("visit funcCall")
-        func = Utils().lookup(ast.name if ast.name != 'super' else self.curr_func.inherit, self.prototype, lambda x: x.name) 
+        func = None
+        if ast.name =='super':
+            func = Utils().lookup(self.curr_func.inherit, self.prototype, lambda x: x.name) 
+        else:
+            func = Utils().lookup(ast.name, param[-1], lambda x: x.name) 
+            if not func: func = Utils().lookup(ast.name, self.prototype, lambda x: x.name) 
+            
         #print(func.name)
         if not func: raise Undeclared(Function(), ast.name)
         if type(func.typ) is VoidType: raise TypeMismatchInExpression(ast)
@@ -228,20 +265,32 @@ class StaticChecker(Visitor):
         #print("current function:", self.curr_func.name)
         lhs = self.visit(ast.lhs, param)
         rhs = self.visit(ast.rhs, param)
-        
-        if type(lhs) is ArrayType: raise TypeMismatchInStatement(ast)
+        if type(lhs) is ArrayType and type(rhs) is ArrayType:
+            if lhs.dimensions != rhs.dimensions:
+                raise TypeMismatchInStatement(ast)
+            if type(lhs.typ) is FloatType and type(rhs.typ) is IntegerType:
+                self.arrflag = False
+                self.curr_arr = None
+                return lhs # tra ve type cua lhs  
+                
+            if type(lhs.typ) is not type(rhs.typ):
+                raise TypeMismatchInExpression(ast)
         if type(lhs) is AutoType:
             if type(rhs) is AutoType: raise TypeMismatchInStatement(ast)
             lhs = InferType.infer(ast.lhs.name, rhs, param)
-        if type(lhs) in [ArrayType, VoidType]:
+        if type(lhs) is VoidType:
             raise TypeMismatchInStatement(ast)
         if type(rhs) is AutoType:
             found = Utils().lookup(ast.rhs.name, self.prototype, lambda x: x.name)
             found.typ = lhs
             rhs = found.typ
             #print(found.typ)
-        if type(lhs) != type(rhs): raise TypeMismatchInStatement(ast)
+        if type(lhs) is FloatType and type(rhs) is IntegerType: pass
+            
+        elif type(lhs) != type(rhs): raise TypeMismatchInStatement(ast)
         ##print(list(map(lambda x: (x.name, x.typ), param[1])))
+        self.arrflag = False
+        self.curr_arr = None
         return lhs # tra ve type cua lhs  
         
     def visitBlockStmt(self, ast, param):
@@ -250,7 +299,10 @@ class StaticChecker(Visitor):
         #local = [[]] + param
         ##print(list(map(lambda x: x.name, param[-1])))
         # check blockscope cua function => true: xu ly super, preventDefautl
-        func = param[1][-1]
+        #print(param)
+        func = None
+        if param[1] != []:
+            func = param[1][-1]
         #print(func.name, 'is function' if type(func) is FuncSymbol else 'is not function')
         #print(list(map(lambda x: x.name, param[0])))
         if type(func) is FuncSymbol and func.inherit != None:
@@ -264,7 +316,6 @@ class StaticChecker(Visitor):
         for stmt in ast.body:
             #print(stmt)
             local = [[]] + param if  type(stmt) is BlockStmt else param
-            if self.returned and type(stmt) is ReturnStmt: continue
             self.visit(stmt, local)
 
     def visitIfStmt(self, ast, param):
@@ -274,8 +325,14 @@ class StaticChecker(Visitor):
         if type(cond) is not BooleanType: raise TypeMismatchInStatement(ast)
         # tao scope cho if stmt
         local = [[]] + param
+        #print("true stmt")
         self.visit(ast.tstmt, local)
-        if ast.fstmt: self.visit(ast.stmt, local)
+        self.returned = False
+        if ast.fstmt:
+            local[0] = []
+            #print('false stmt')
+            self.visit(ast.fstmt, local)
+            self.returned = False
         
     def visitForStmt(self, ast, param):
         #print("visit for stmt")
@@ -290,18 +347,21 @@ class StaticChecker(Visitor):
         if type(updt) is not IntegerType: raise TypeMismatchInStatement(ast)
         #print(list(map(lambda x: x.name, local[0])))
         self.visit(ast.stmt, local)
+        self.returned = False
         self.inloop.pop(-1)
     def visitWhileStmt(self, ast, param): 
         #print("visit While stmt")
         self.inloop.append('while')
         if type(self.visit(ast.cond, param)) is not BooleanType: raise TypeMismatchInStatement(ast)
         self.visit(ast.stmt, param)
+        self.returned = False
         self.inloop.pop(-1)
     def visitDoWhileStmt(self, ast, param): 
         #print("visit do-while stmt")
         self.inloop.append("do-while")
         self.visit(ast.stmt, param)
         if type(self.visit(ast.cond, param)) is not BooleanType: raise TypeMismatchInStatement(ast)
+        self.returned = False
         self.inloop.pop(-1)
     def visitBreakStmt(self, ast, param):
         #print("break")
@@ -310,7 +370,8 @@ class StaticChecker(Visitor):
         #print("continue")
         if(self.inloop == []): raise MustInLoop(ast)
     def visitReturnStmt(self, ast, param):
-        print("return stmt")
+        #print("return stmt")
+        if self.returned: return
         self.returned = True
         found = Utils().lookup(self.curr_func.name,self.prototype, lambda x: x.name)
         if not ast.expr:
@@ -322,7 +383,10 @@ class StaticChecker(Visitor):
                 if type(infertyp) in [AutoType, VoidType]: raise TypeMismatchInStatement(ast)
                 else: found.typ = infertyp        
             if type(self.curr_func.typ) is VoidType: raise TypeMismatchInStatement(ast)
+            if type(self.curr_func.typ) is FloatType and type(infertyp) is IntegerType: infertyp = self.curr_func.typ
             if type(self.curr_func.typ) is not type(infertyp): raise TypeMismatchInStatement(ast)
+        self.arrflag = False
+        self.curr_arr = None
         
     def visitCallStmt(self, ast, param): 
         #print("visit callstmt")
@@ -330,21 +394,27 @@ class StaticChecker(Visitor):
         # with super
         # get list pram of funccall, callstmt
         args = [self.visit(x, param) for x in ast.args]
+        #print(args)
         if ast.name == 'super':
             parentF = Utils().lookup(self.curr_func.inherit, self.prototype, lambda x: x.name)
+            if not parentF: raise TypeMismatchInStatement(ast)
             if len(args) < len(parentF.params): raise TypeMismatchInExpression(None)
             if len(args) > len(parentF.params): raise TypeMismatchInExpression(ast.args[len(parentF.params)])              
             for i in range(len(args)):
                 if type(parentF.params[i].typ) is AutoType:
                     parentF.params[i].typ = args[i]
+                if type(args[i]) is AutoType:
+                    args[i] = parentF.params[i].typ
                 #print(type(args[i]), '-', type(parentF.params[i].typ))
+                if type(args[i]) is IntegerType and type(parentF.params[i].typ) is FloatType:
+                    args[i] = parentF.params[i].typ
                 if type(args[i]) != type(parentF.params[i].typ): raise TypeMismatchInExpression(ast.args[i])
             
         else:
             callfunc = Utils().lookup(ast.name, param[-1], lambda x: x.name)
             if callfunc is None:
                 callfunc = Utils().lookup(ast.name, self.prototype, lambda x: x.name)
-                if callfunc is None or type(callfunc) is not FuncSymbol: raise Undeclared(FuncSymbol(), ast.name)
+                if callfunc is None or type(callfunc) is not FuncSymbol: raise Undeclared(Function(), ast.name)
             else: 
                 if type(callfunc) not in [FuncSymbol, GlobalFunc]: raise Undeclared(Function(), ast.name)
             
@@ -357,6 +427,10 @@ class StaticChecker(Visitor):
             for i in range(len(args)):
                 if type(callfunc.params[i].typ) is AutoType:
                     callfunc.params[i].typ = args[i]
+                if type(args[i]) is AutoType:
+                    args[i] = callfunc.params[i].typ
+                if type(args[i]) is IntegerType and type(callfunc.params[i].typ) is FloatType:
+                    args[i] = callfunc.params[i].typ
                 if type(callfunc.params[i].typ) is not type(args[i]): raise TypeMismatchInStatement(ast)
             
     ##### Declared #####
@@ -366,19 +440,39 @@ class StaticChecker(Visitor):
         self.curr_var = ast.name
         # full declared
         if ast.init is not None:
+            #if type(ast.init) is ArrayLit: self.curr_arr = ast.init
             rhstype = self.visit(ast.init, param) # lay type cua rhs
             if type(ast.typ) is AutoType and type(rhstype) is AutoType: raise Invalid(Variable(), ast.name)
             # handle with auto type => infer type
+            if type(rhstype) is ArrayType and type(ast.typ) is ArrayType:
+                # check dimension
+                if ast.typ.dimensions != rhstype.dimensions :
+                    raise TypeMismatchInVarDecl(ast)
+                if type(ast.typ.typ) is FloatType and type(rhstype.typ) is IntegerType:
+                    param[0] += [VarSymbol(ast.name, ast.typ)]
+                    self.arrflag = False
+                    self.curr_arr = None
+                    self.curr_var = None
+                    return param
+                if type(ast.typ.typ) is not type(rhstype.typ):
+                    raise TypeMismatchInVarDecl(ast)
+                
             if type(rhstype) in [BooleanType, IntegerType, FloatType, StringType, ArrayType]:
-                if type(ast.typ) is AutoType or (type(ast.typ) == type(rhstype)):
-                    param[0] += [VarSymbol(ast.name, rhstype)]
+                if type(ast.typ) is AutoType or (type(ast.typ) == type(rhstype)) or type(ast.typ) is FloatType and type(rhstype) is IntegerType:
+                    param[0] += [VarSymbol(ast.name, ast.typ if type(ast.typ) is not AutoType else rhstype)]
+                    self.arrflag = False
+                    self.curr_arr = None
+                    self.curr_var = None
+                    return param
                 else: raise TypeMismatchInVarDecl(ast)
             elif type(ast.typ) in [BooleanType, IntegerType, FloatType, StringType, ArrayType] and type(rhstype) is AutoType:
                 # tim kiem func symbol rhs trong symbol table
+                found = None
                 for syms in param:
                     found = Utils().lookup(ast.name, syms, lambda x: x.name)
-                    found.typ = ast.typ #can quay lai than ham check lai -> skip now
-                    break     
+                    if found: break
+                if not found: raise Undeclared(Function() if type(ast.init) is FuncCall else Identifier(), ast.name) 
+                
             else: raise TypeMismatchInVarDecl(ast)
         
         if ast.init is None:
@@ -386,7 +480,9 @@ class StaticChecker(Visitor):
             elif type(ast.typ) in [BooleanType, IntegerType, FloatType, StringType, ArrayType]:
                 param[0] += [VarSymbol(ast.name, ast.typ)]
             else: raise TypeMismatchInVarDecl(ast)
-            self.curr_var = None
+        self.curr_var = None
+        self.arrflag = False
+        self.curr_arr = None
                 
     def visitParamDecl(self, ast, param):
         paramSym = Utils().lookup(ast.name,param,lambda x: x.name)
@@ -430,11 +526,11 @@ class StaticChecker(Visitor):
     def visitProgram(self, ast, param):
         # first get prototype 
         self.prototype = GetPrototype(self.ast).visit(self.ast, param)
-        print(list(map(lambda x: x.name if type(x) is VarSymbol or type(x) is GlobalFunc else f'func {x.typ} {x.name}({list(map(lambda y: (y.name, y.typ), x.params))})', self.prototype)))
+        #print(list(map(lambda x: x.name if type(x) is VarSymbol or type(x) is GlobalFunc else f'func {x.typ} {x.name}({list(map(lambda y: (y.name, y.typ), x.params))})', self.prototype)))
         for decl in ast.decls:
             self.visit(decl,self.env)
         
-        print(list(map(lambda x: x.name if type(x) is VarSymbol or type(x) is GlobalFunc else f'func {x.typ} {x.name}({list(map(lambda y: (y.name, y.typ), x.params))})', self.env[0])))
+        #print(list(map(lambda x: x.name if type(x) is VarSymbol or type(x) is GlobalFunc else f'func {x.typ} {x.name}({list(map(lambda y: (y.name, y.typ), x.params))})', self.env[0])))
         ismain = False
         #print(list(map(lambda x: x.name, param[0])))
         for func in self.env[0]:

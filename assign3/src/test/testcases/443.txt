@@ -1,0 +1,10 @@
+
+            foo: function void(){
+                x: boolean;
+                {
+                    x: float;
+                }
+                x = 5.5;
+            }
+            main: function void(){}
+        

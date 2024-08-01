@@ -1,0 +1,10 @@
+
+        foo: function auto(){
+            x: integer = readInteger();
+            y: float = 3.14;
+            if (x>5){
+                return x;
+            }
+            return y;
+        }
+    

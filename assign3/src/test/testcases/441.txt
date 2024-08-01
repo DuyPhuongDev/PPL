@@ -1,0 +1,7 @@
+
+        main: function void(){
+            printInteger(234);
+            x: auto = -readFloat();
+            printString(x);
+        }
+    

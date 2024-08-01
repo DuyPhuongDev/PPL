@@ -1,0 +1,6 @@
+
+        x: string = "abc";
+        main: function void(){
+            if (x == "1") x = 1;            
+        }
+        

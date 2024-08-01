@@ -1,0 +1,9 @@
+
+        foo: function integer(a: integer){
+            x: string = "hello world!";
+            return a;
+            return x;
+        }
+
+        main: function void(){}
+    

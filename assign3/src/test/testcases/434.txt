@@ -1,0 +1,6 @@
+
+        foo: function void(){
+            bar(true);
+        }
+        bar: function void(a: boolean){}
+        

@@ -1,0 +1,9 @@
+
+        main: function void(){
+            x: integer = readInteger();
+            if (x>5){
+                return x;
+            }
+            return 5;
+        }
+    

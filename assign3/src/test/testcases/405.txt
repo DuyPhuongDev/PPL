@@ -1,4 +1,4 @@
-Program([
-	VarDecl(a, IntegerType)
-	VarDecl(c, FloatType)
-])
+
+        x: array[5] of integer = {1,2,3,4,5};
+        x: auto;
+        

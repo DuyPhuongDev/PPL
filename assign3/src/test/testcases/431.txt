@@ -1,0 +1,6 @@
+
+        foo: function void() inherit bar{
+            
+        }
+        bar: float = 5/123;
+        

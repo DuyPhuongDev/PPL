@@ -1,1 +1,1 @@
-Type mismatch in expression: IntegerLit(10)
+Type mismatch in expression: ArrayCell(g, [Id(x), IntegerLit(1), Id(x)])

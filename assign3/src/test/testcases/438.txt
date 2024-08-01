@@ -1,0 +1,9 @@
+
+        foo: function void (){
+            x: integer;
+            {
+                x = 5;
+            }
+        }
+        main: function void(){}
+    

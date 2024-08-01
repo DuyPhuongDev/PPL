@@ -1,9 +1,9 @@
 
-        foo: function void() inherit ain{
-            super(1);        
+        foo: function boolean() inherit goo{
+            super(5);        
         }
-        ain:function void ( y: integer) {
-            f: array[3] of float;
+        goo:function float ( a: integer) {
+            b: array[5] of string;
         }
         main: function auto(){        
         }

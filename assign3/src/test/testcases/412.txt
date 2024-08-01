@@ -1,9 +1,9 @@
 
-        foo: function void(){
-            super(1);        
+        foo: function auto(){
+            super(3.14, 5);
         }
-        ain:function void (inherit y: float, inherit y: integer) {
-            f: array[3] of float;
+        bar:function void (inherit a: float, inherit b: integer) {
+            c: array[5,5] of float;
         }
         main: function void(){        
         }
