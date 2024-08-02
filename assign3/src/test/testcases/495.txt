@@ -1,0 +1,9 @@
+
+        foo: function void() {
+            do {
+                a: integer = 5;
+                if (a > 3) continue;
+            } while (a < 10); 
+        }
+        main: function void() {}
+        

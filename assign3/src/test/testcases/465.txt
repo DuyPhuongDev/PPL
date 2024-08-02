@@ -1,0 +1,12 @@
+
+        x: integer = 5;
+        foo: function string(a: integer, b: float){
+            return "i love ppl!";
+        }
+        main: function void(){
+            {
+                x: string = "abc";
+            }
+            a: string = foo(x+4, 3.14);
+        }
+        

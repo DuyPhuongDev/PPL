@@ -1,0 +1,8 @@
+
+        foo: function void(){
+            return 5;
+        }
+        main: function void(){
+            foo();
+        }
+        

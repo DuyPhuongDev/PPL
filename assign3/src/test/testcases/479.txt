@@ -1,0 +1,6 @@
+
+        foo: function integer() {
+            return foo(1, 2);
+        }
+        main: function void() {}
+        

@@ -1,0 +1,10 @@
+
+        foo: function void() {
+            x: integer = 10;
+            {
+                x: float = 20.5; // redeclared variable in block scope
+            }
+            return x;
+        }
+        main: function void() {}
+        

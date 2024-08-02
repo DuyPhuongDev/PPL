@@ -1,0 +1,8 @@
+
+        foo: function void() {
+            x: integer = 10;
+            y: float = 20.0;
+            z: integer = x + y; 
+        }
+        main: function void() {}
+        

@@ -1,0 +1,8 @@
+
+        foo: function string(){
+            return "i love ppl!";
+        }
+        main: function void(){
+            a: string = foo();
+        }
+        

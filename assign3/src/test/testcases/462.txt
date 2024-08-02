@@ -1,0 +1,10 @@
+
+        main: function void(){
+            x: integer = 5;
+            while(true){
+                if (x>5) continue;
+                x = x+1;
+            }
+            break;
+        }
+        

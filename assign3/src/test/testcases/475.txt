@@ -1,0 +1,7 @@
+
+        foo: function integer(a: integer) {
+            x: float = "string";
+            return 1;
+        }
+        main: function void() {}
+        

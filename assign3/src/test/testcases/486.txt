@@ -1,0 +1,8 @@
+
+        foo: function void() {
+            for (i = 0, i < 10, i + 1) {
+                i: float = 1.0; 
+            }
+        }
+        main: function void() {}
+        

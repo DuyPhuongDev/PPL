@@ -1,0 +1,11 @@
+
+        foo: function void() {
+            a: integer = 10;
+            b: integer = 20;
+            if (a > b) {
+                return a; // invalid return type
+            }
+            return "hello"; // invalid return type
+        }
+        main: function void() {}
+        

@@ -1,0 +1,11 @@
+
+        a: integer;
+        foo1: function void(inherit x: float) {}
+        
+        foo2: function void(inherit x: float) inherit foo1 {
+            super(10);
+            x: integer = 20;
+        }
+        
+        main: function void() {}
+        

@@ -1,0 +1,10 @@
+
+        foo: function integer(a: integer) {
+            if (a > 0) {
+                return a;
+            } else {
+                return "negative"; // type mismatch
+            }
+        }
+        main: function void() {}
+        

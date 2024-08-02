@@ -1,0 +1,7 @@
+
+        foo: function void() {
+            arr: array [5] of integer;
+            arr[6] = 10; 
+        }
+        main: function void() {}
+        

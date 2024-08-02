@@ -1,0 +1,9 @@
+
+        foo: function void() {
+            x: integer = 1;
+            for (i = 0, i < 10, i + 1) {
+                y: integer = i;
+            }
+            y = y + 1;
+        }
+        

@@ -1,0 +1,6 @@
+
+        foo: function void() {
+            x: float = 1.0;
+            y: integer = x - 1;
+        }
+        

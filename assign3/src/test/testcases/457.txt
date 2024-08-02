@@ -1,0 +1,9 @@
+
+        main: function void(a: auto){
+            x: float;
+            x = !foo();
+        }
+        foo: function auto(){
+            return true;
+        }
+        

@@ -86,6 +86,7 @@ class StaticChecker(Visitor):
         self.returned = False
         self.curr_arr = None
         self.arrflag = False
+        self.typeinfer = None
     
     # type
     def visitIntegerType(self, ast, param): return IntegerType()
@@ -99,17 +100,33 @@ class StaticChecker(Visitor):
     ######  Expr  #####
     def visitBinExpr(self, ast, param):
         #print('visit bin')
-        #print(ast.left)
         ltype = self.visit(ast.left, param)
-        #ltype = l.typ if type(ast.left) is Id else l 
         rtype = self.visit(ast.right, param)
-        #rtype = r.typ if type(ast.right) is Id else r
+        #print(ltype, '-', rtype)
         if type(ltype) is AutoType:
-            if type(rtype) is AutoType: raise TypeMismatchInExpression(ast)
-            else: ltype = InferType.infer(ast.left.name,rtype,param)
+            if not self.typeinfer and type(rtype) is AutoType: return AutoType()
+            elif type(rtype) is not AutoType: ltype = InferType.infer(ast.left.name,rtype,param)
         else:
             if type(rtype) is AutoType: rtype = InferType.infer(ast.right.name, ltype, param)
-        if ast.op in ['-', '+', '*', '/']:  
+        if ast.op in ['-', '+', '*', '/']: 
+            #print(ltype, rtype)
+            #print(type(ltype) is AutoType and type(rtype) is AutoType)
+            if type(ltype) is AutoType and type(rtype) is AutoType:
+                if type(self.typeinfer) not in [IntegerType, FloatType]: return None
+                #print(type(ast.left), '-', type(ast.right))
+                if type(ast.left) is Id:
+                    ltype =  InferType.infer(ast.left.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.left.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.left.name)
+                    found.typ = self.typeinfer
+                if type(ast.right) is Id:
+                    rtype = InferType.infer(ast.right.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.right.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.right.name)
+                    found.typ = self.typeinfer
+                return self.typeinfer
             if type(ltype) is IntegerType and type(rtype) is IntegerType:
                 return IntegerType() if ast.op != '/' else FloatType()
             if (type(ltype),type(rtype)) in [(IntegerType, FloatType), (FloatType, IntegerType), (FloatType, FloatType)]:
@@ -117,38 +134,137 @@ class StaticChecker(Visitor):
             raise TypeMismatchInExpression(ast)
         
         if ast.op == '%': 
+            if type(ltype) is AutoType and type(rtype) is AutoType:
+                #print(type(ast.left), '-', type(ast.right))
+                if type(self.typeinfer) is not IntegerType: return None
+                if type(ast.left) is Id:
+                    ltype =  InferType.infer(ast.left.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.left.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.left.name)
+                    found.typ = self.typeinfer
+                if type(ast.right) is Id:
+                    rtype = InferType.infer(ast.right.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.right.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.right.name)
+                    found.typ = self.typeinfer
+                return self.typeinfer
             if type(ltype) is IntegerType and type(rtype) is IntegerType:
                 return IntegerType()
             raise TypeMismatchInExpression(ast)
         
         if ast.op in ['&&', '||']:
+            if type(ltype) is AutoType and type(rtype) is AutoType:
+                #print(type(ast.left), '-', type(ast.right))
+                if type(self.typeinfer) is not BooleanType: return None
+                if type(ast.left) is Id:
+                    ltype =  InferType.infer(ast.left.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.left.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.left.name)
+                    found.typ = self.typeinfer
+                if type(ast.right) is Id:
+                    rtype = InferType.infer(ast.right.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.right.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.right.name)
+                    found.typ = self.typeinfer
+                return self.typeinfer
             if type(ltype) is BooleanType and type(rtype) is BooleanType:
                 return BooleanType()
             raise TypeMismatchInExpression(ast)
         
         if ast.op == '::':
+            if type(ltype) is AutoType and type(rtype) is AutoType:
+                #print(type(ast.left), '-', type(ast.right))
+                if type(self.typeinfer) is not StringType: return None
+                if type(ast.left) is Id:
+                    ltype =  InferType.infer(ast.left.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.left.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.left.name)
+                    found.typ = self.typeinfer
+                if type(ast.right) is Id:
+                    rtype = InferType.infer(ast.right.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.right.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.right.name)
+                    found.typ = self.typeinfer
+                return self.typeinfer
             if type(ltype) is StringType and type(rtype) is StringType:
                 return StringType()
             raise TypeMismatchInExpression(ast)
         
         if ast.op in ['==', '!=']:
+            if type(ltype) is AutoType and type(rtype) is AutoType:
+                #print(type(ast.left), '-', type(ast.right))
+                if type(self.typeinfer) not in [IntegerType, BooleanType]: return None
+                if type(ast.left) is Id:
+                    ltype =  InferType.infer(ast.left.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.left.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.left.name)
+                    found.typ = self.typeinfer
+                if type(ast.right) is Id:
+                    rtype = InferType.infer(ast.right.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.right.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.right.name)
+                    found.typ = self.typeinfer
+                return self.typeinfer
             if (type(ltype), type(rtype)) in [(IntegerType, IntegerType), (IntegerType, BooleanType), (BooleanType, IntegerType), (BooleanType, BooleanType)]:
                 return BooleanType()
             raise TypeMismatchInExpression(ast)
         
         if ast.op in ['<', '>', '<=', '>=']:
+            if type(ltype) is AutoType and type(rtype) is AutoType:
+                #print(type(ast.left), '-', type(ast.right))
+                if type(self.typeinfer) not in [IntegerType, FloatType]: return None
+                if type(ast.left) is Id:
+                    ltype =  InferType.infer(ast.left.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.left.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.left.name)
+                    found.typ = self.typeinfer
+                if type(ast.right) is Id:
+                    rtype = InferType.infer(ast.right.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.right.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.right.name)
+                    found.typ = self.typeinfer
+                return self.typeinfer
             if (type(ltype), type(rtype)) in [(IntegerType, IntegerType), (IntegerType, FloatType), (FloatType, IntegerType), (FloatType,FloatType)]:
                 return BooleanType()
             raise TypeMismatchInExpression(ast)
             
     def visitUnExpr(self, ast, param):
         etype = self.visit(ast.val, param)
-        #etype = e.typ if type(ast.val) is Id else e
+        if not self.typeinfer and type(etype) is AutoType: return AutoType()
+        
         if ast.op == '-':
+            if type(etype) is AutoType:
+                if type(self.typeinfer) not in [IntegerType, FloatType]: return None
+                if type(ast.val) is Id:
+                    etype =  InferType.infer(ast.val.name, self.typeinfer, param)
+                else:
+                    found = Utils().lookup(ast.val.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.left.name)
+                    found.typ = self.typeinfer
+                return self.typeinfer
             if type(etype) in [IntegerType, FloatType]:
                 return etype
             raise TypeMismatchInExpression(ast)
         if ast.op == '!':
+            if type(etype) is AutoType:
+                #if type(self.typeinfer) is not BooleanType: return None
+                if type(ast.val) is Id:
+                    etype =  InferType.infer(ast.val.name, BooleanType(), param)
+                else:
+                    found = Utils().lookup(ast.val.name, self.prototype, lambda x: x.name)
+                    if not found: raise Undeclared(Function(), ast.left.name)
+                    found.typ = BooleanType()
+                return BooleanType()
             if type(etype) is BooleanType:
                 return BooleanType()
             raise TypeMismatchInExpression(ast)
@@ -281,9 +397,19 @@ class StaticChecker(Visitor):
         if type(lhs) is VoidType:
             raise TypeMismatchInStatement(ast)
         if type(rhs) is AutoType:
-            found = Utils().lookup(ast.rhs.name, self.prototype, lambda x: x.name)
-            found.typ = lhs
-            rhs = found.typ
+            if type(ast.rhs) in [BinExpr, UnExpr]:
+                self.typeinfer = lhs
+                #print(self.typeinfer)
+                #print(ast.rhs)
+                # visit again bin to infer type operand
+                rhs = self.visit(ast.rhs, param)
+                if not type(rhs): raise TypeMismatchInStatement(ast)
+                #print(rhs)
+                self.typeinfer = None
+            else:
+                found = Utils().lookup(ast.rhs.name, self.prototype, lambda x: x.name)
+                found.typ = lhs
+                rhs = found.typ
             #print(found.typ)
         if type(lhs) is FloatType and type(rhs) is IntegerType: pass
             
@@ -359,8 +485,8 @@ class StaticChecker(Visitor):
     def visitDoWhileStmt(self, ast, param): 
         #print("visit do-while stmt")
         self.inloop.append("do-while")
-        self.visit(ast.stmt, param)
         if type(self.visit(ast.cond, param)) is not BooleanType: raise TypeMismatchInStatement(ast)
+        self.visit(ast.stmt, param)
         self.returned = False
         self.inloop.pop(-1)
     def visitBreakStmt(self, ast, param):
@@ -435,14 +561,16 @@ class StaticChecker(Visitor):
             
     ##### Declared #####
     def visitVarDecl(self, ast, param):
+        #print("visit Vardecl")
         if Utils().lookup(ast.name, param[0], lambda x: x.name) is not None:
             raise Redeclared(Variable(), ast.name) 
         self.curr_var = ast.name
         # full declared
         if ast.init is not None:
-            #if type(ast.init) is ArrayLit: self.curr_arr = ast.init
             rhstype = self.visit(ast.init, param) # lay type cua rhs
-            if type(ast.typ) is AutoType and type(rhstype) is AutoType: raise Invalid(Variable(), ast.name)
+            #print(ast.typ)
+            #print(rhstype)
+            if type(ast.typ) is AutoType and type(rhstype) is AutoType: raise TypeMismatchInVarDecl(ast)
             # handle with auto type => infer type
             if type(rhstype) is ArrayType and type(ast.typ) is ArrayType:
                 # check dimension
@@ -467,12 +595,20 @@ class StaticChecker(Visitor):
                 else: raise TypeMismatchInVarDecl(ast)
             elif type(ast.typ) in [BooleanType, IntegerType, FloatType, StringType, ArrayType] and type(rhstype) is AutoType:
                 # tim kiem func symbol rhs trong symbol table
-                found = None
-                for syms in param:
-                    found = Utils().lookup(ast.name, syms, lambda x: x.name)
-                    if found: break
-                if not found: raise Undeclared(Function() if type(ast.init) is FuncCall else Identifier(), ast.name) 
-                
+                #print(ast.init)
+                if type(ast.init) not in [BinExpr, UnExpr]:
+                    found = None
+                    for syms in param:
+                        found = Utils().lookup(ast.name, syms, lambda x: x.name)
+                        if found: break
+                    if not found: raise Undeclared(Function() if type(ast.init) is FuncCall else Identifier(), ast.name) 
+                else:
+                    self.typeinfer = ast.typ
+                    #print(self.typeinfer)
+                # visit again bin to infer type operand
+                    tmp = self.visit(ast.init, param)
+                    if not type(tmp): raise TypeMismatchInStatement(ast)
+                    self.typeinfer = None
             else: raise TypeMismatchInVarDecl(ast)
         
         if ast.init is None:
@@ -496,7 +632,7 @@ class StaticChecker(Visitor):
         if funcsym != None: raise Redeclared(Function(), ast.name)
         # get list param
         params = [] # luu parameter cua func con
-        
+        parentFunc = None
         if ast.inherit != None:
             # co ke thua => tim func cha
             ##print(list(map(lambda x: x.name,filter(lambda x: type(x) is FuncSymbol, self.prototype))))
@@ -507,8 +643,9 @@ class StaticChecker(Visitor):
                 if x.inherit: params += [x]
         
         idxInherit = len(params) # luu so luong param dc inherit tu ham cha
-        
         for x in ast.params:
+            if parentFunc:  
+                if x.name in list(map(lambda x: x.name, parentFunc.params)): raise Invalid(Parameter(), x.name)
             params = self.visit(x, params)
         local_param = params[idxInherit:]
         #func = FuncSymbol(ast.name, local_param, ast.return_type, ast.inherit)

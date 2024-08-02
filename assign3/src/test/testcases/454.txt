@@ -1,0 +1,11 @@
+
+        main: function void(a: auto){
+            x: integer = a + bar();
+        }
+        foo: function auto(){
+            return 5;
+        }
+        bar: function auto(){
+            return true;
+        }
+        

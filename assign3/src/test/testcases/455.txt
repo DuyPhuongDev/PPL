@@ -1,0 +1,12 @@
+
+        main: function void(a: auto){
+            x: string;
+            x = foo() + bar();
+        }
+        foo: function auto(){
+            return 5;
+        }
+        bar: function auto(){
+            return true;
+        }
+        

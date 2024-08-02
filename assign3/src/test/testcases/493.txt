@@ -1,0 +1,11 @@
+
+        foo: function void(a: integer, b: integer) {
+            for (i = 0, i < a + b, i + 1) {
+                a = i + 1;
+            }
+            return b;
+        }
+        main: function void() {
+            foo(1, "string"); 
+        }
+        
