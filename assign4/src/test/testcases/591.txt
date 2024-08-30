@@ -1,0 +1,7 @@
+
+        main: function void() {
+            s1: string = "abc";
+            s2: string = "def";
+            s3: string = s1 :: s2;
+        }
+        

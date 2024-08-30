@@ -1,0 +1,14 @@
+
+        baseFunc: function void() {
+            printString("Hello");
+        }
+        
+        greetFunc: function void() inherit baseFunc {
+            super();
+            printString("World");
+        }
+        
+        main: function void() {
+            greetFunc();
+        }
+        

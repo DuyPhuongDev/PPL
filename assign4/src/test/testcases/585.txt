@@ -1,0 +1,7 @@
+
+        main: function void() {
+            arr: array[3] of integer = {1, 2, 3};
+            i: integer = arr[0];
+            j: integer = arr[2];
+        }
+        

@@ -1,0 +1,6 @@
+
+        main: function void() {
+            s: string = "Hello";
+            t: string = s :: " World";
+        }
+        

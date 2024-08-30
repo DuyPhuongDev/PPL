@@ -1,0 +1,10 @@
+
+        main: function void() {
+            arr: array[3] of float = {1.1, 2.2, 3.3};
+            product: float = 1.0;
+            i: integer;
+            for (i = 0, i < 3, i + 1) {
+                product = product * arr[i];
+            }
+        }
+        

@@ -1,0 +1,8 @@
+
+        main: function void() {
+            s1: string = "hello";
+            s2: string = " ";
+            s3: string = "world";
+            result: string = (s1 :: s2 ):: s3;
+        }
+        

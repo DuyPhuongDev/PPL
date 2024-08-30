@@ -1,0 +1,8 @@
+
+        main: function void() {
+            arr: array[3] of integer = {1, 2, 3};
+            i: integer = 1;
+            result: integer;
+            result = arr[i] + arr[i + 1];
+        }
+        

@@ -1,0 +1,6 @@
+
+        main: function void() {
+            message: string = "Hello, World!";
+            printString(message);
+        }
+        

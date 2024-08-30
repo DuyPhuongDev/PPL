@@ -1,0 +1,19 @@
+
+        ancestorFunc: function void() {
+            printString("Ancestor Function");
+        }
+        
+        parentFunc: function void() inherit ancestorFunc {
+            super();
+            printString("Parent Function");
+        }
+        
+        childFunc: function void() inherit parentFunc {
+            super();
+            printString("Child Function");
+        }
+        
+        main: function void() {
+            childFunc();
+        }
+        

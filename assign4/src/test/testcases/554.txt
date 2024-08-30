@@ -1,0 +1,12 @@
+
+        sumArray: function integer(arr: array[5] of integer, n: integer) {
+            if (n == 0) return arr[0];
+            else return arr[n] + sumArray(arr, n - 1);
+        }
+        
+        main: function void() {
+            arr: array[5] of integer = {1, 2, 3, 4, 5};
+            total: integer;
+            total = sumArray(arr, 4);
+        }
+        

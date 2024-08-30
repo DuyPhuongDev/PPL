@@ -1,0 +1,7 @@
+
+        main: function void() {
+            s: string;
+            s = "abc";
+            t: string = s :: "def";
+        }
+        

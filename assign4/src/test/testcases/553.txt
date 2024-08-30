@@ -1,0 +1,11 @@
+
+        pow: function integer(base: integer, exp: integer) {
+            if (exp == 0) return 1;
+            else return base * pow(base, exp - 1);
+        }
+        
+        main: function void() {
+            result: integer;
+            result = pow(2, 10);
+        }
+        

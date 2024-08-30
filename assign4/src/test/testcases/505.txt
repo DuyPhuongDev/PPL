@@ -1,0 +1,11 @@
+
+        main: function void() {
+            x: integer = 10;
+            y: integer;
+            if (x > 5) {
+                y = x * 2;
+            } else {
+                y = x + 2;
+            }
+        }
+        

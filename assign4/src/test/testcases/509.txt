@@ -1,0 +1,8 @@
+
+        main: function void() {
+            s: string = "Hello";
+            t: string = "World";
+            u: string;
+            u = (s :: " ") :: t;
+        }
+        

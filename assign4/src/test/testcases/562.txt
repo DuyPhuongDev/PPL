@@ -1,0 +1,11 @@
+
+        main: function void() {
+            x: integer = 5;
+            if (x < 10) {
+                x = x + 1;
+            } else {
+                y: integer = 20;
+                y = y + 1;
+            }
+        }
+        

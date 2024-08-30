@@ -1,0 +1,9 @@
+
+        main: function void() {
+            sum: integer = 0;
+            i: integer;
+            for (i = 1, i <= 10, i + 1) {
+                sum = sum + i;
+            }
+        }
+        

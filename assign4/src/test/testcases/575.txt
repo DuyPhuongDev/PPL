@@ -1,0 +1,16 @@
+
+        isEven: function boolean(n: integer) {
+            return n % 2 == 0;
+        }
+        
+        isOdd: function boolean(n: integer) {
+            return n % 2 != 0;
+        }
+        
+        main: function void() {
+            evenResult: boolean;
+            oddResult: boolean;
+            evenResult = isEven(4);
+            oddResult = isOdd(7);
+        }
+        

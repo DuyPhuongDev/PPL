@@ -1,0 +1,7 @@
+
+        main: function void() {
+            arr: array[4] of string = {"a", "b", "c", "d"};
+            s: string;
+            s = arr[1] :: arr[3];
+        }
+        

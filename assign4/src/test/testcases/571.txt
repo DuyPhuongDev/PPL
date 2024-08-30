@@ -1,0 +1,14 @@
+
+        add: function integer(a: integer, b: integer) {
+            return a + b;
+        }
+        
+        multiply: function integer(a: integer, b: integer) {
+            return a * b;
+        }
+        
+        main: function void() {
+            x: integer;
+            x = add(5, multiply(2, 3));
+        }
+        

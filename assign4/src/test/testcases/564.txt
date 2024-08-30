@@ -1,0 +1,10 @@
+
+        main: function void() {
+            a: integer = 10;
+            {
+                a: integer = 20;
+                a = a + 1;
+            }
+            a = a + 1;
+        }
+        

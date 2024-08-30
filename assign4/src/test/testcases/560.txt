@@ -1,0 +1,8 @@
+
+        main: function void() {
+            flag: boolean = true;
+            if (flag) {
+                flag = false;
+            }
+        }
+        

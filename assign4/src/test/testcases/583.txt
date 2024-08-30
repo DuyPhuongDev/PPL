@@ -1,0 +1,7 @@
+
+        main: function void() {
+            p: boolean;
+            p = true;
+            q: boolean = p || false;
+        }
+        

@@ -1,0 +1,10 @@
+
+        main: function void() {
+            z: boolean = false;
+            if (z == true) {
+                z = false;
+            } else {
+                z = true;
+            }
+        }
+        

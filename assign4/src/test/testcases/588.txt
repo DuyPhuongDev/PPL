@@ -1,0 +1,10 @@
+
+        main: function void() {
+            arr: array[4] of boolean = {true, false, true, false};
+            result: boolean = true;
+            i: integer;
+            for (i = 0, i < 4, i + 1) {
+                result = result && arr[i];
+            }
+        }
+        

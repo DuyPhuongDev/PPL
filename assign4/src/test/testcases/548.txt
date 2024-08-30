@@ -1,0 +1,8 @@
+
+        main: function void() {
+            p: boolean = true;
+            q: boolean = false;
+            r: boolean;
+            r = p && q;
+        }
+        

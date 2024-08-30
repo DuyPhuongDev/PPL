@@ -1,0 +1,8 @@
+
+        main: function void() {
+            z: integer = 0;
+            do {
+                z = z + 1;
+            } while (z < 3);
+        }
+        

@@ -1,0 +1,8 @@
+
+
+        
+        main: function void() {
+            str: string = "hello";
+            rev: string;
+        }
+        

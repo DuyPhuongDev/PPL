@@ -1,0 +1,11 @@
+
+        gcd: function integer(a: integer, b: integer) {
+            if (b == 0) return a;
+            else return gcd(b, a % b);
+        }
+        
+        main: function void() {
+            res: integer;
+            res = gcd(48, 18);
+        }
+        

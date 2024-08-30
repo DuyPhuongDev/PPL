@@ -1,0 +1,7 @@
+
+        main: function void() {
+            arr: array[2, 2] of integer = {{1, 2}, {3, 4}};
+            y: integer;
+            y = arr[1, 1];
+        }
+        

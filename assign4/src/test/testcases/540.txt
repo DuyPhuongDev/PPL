@@ -1,0 +1,9 @@
+
+        main: function void() {
+            n: integer = 0;
+            do {
+                if (n == 3) break;
+                n = n + 1;
+            } while (n < 5);
+        }
+        

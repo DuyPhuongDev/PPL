@@ -1,0 +1,9 @@
+
+        main: function void() {
+            x: integer = 1;
+            i: integer;
+            for (i = 2, i < 10, i + 2) {
+                x = x * i;
+            }
+        }
+        

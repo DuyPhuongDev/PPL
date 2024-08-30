@@ -1,0 +1,14 @@
+
+        baseFunc: function void() {
+            printString("Base Function");
+        }
+        
+        derivedFunc: function void() inherit baseFunc {
+            super();
+            printString("Derived Function");
+        }
+        
+        main: function void() {
+            derivedFunc();
+        }
+        

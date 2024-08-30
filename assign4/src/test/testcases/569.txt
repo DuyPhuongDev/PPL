@@ -1,0 +1,14 @@
+
+        rootFunc: function void() {
+            writeFloat(3.14);
+        }
+        
+        squareFunc: function void() inherit rootFunc {
+            super();
+            writeFloat(9.0);
+        }
+        
+        main: function void() {
+            squareFunc();
+        }
+        

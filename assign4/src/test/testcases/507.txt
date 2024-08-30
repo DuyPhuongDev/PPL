@@ -1,0 +1,7 @@
+
+        main: function void() {
+            a: integer = 7;
+            b: integer;
+            b = a - 3;
+        }
+        

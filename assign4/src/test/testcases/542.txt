@@ -1,0 +1,14 @@
+
+        parentFunc: function void() {
+            printString("Parent Function");
+        }
+        
+        childFunc: function void() inherit parentFunc {
+            preventDefault();
+            printString("Child Function");
+        }
+        
+        main: function void() {
+            childFunc();
+        }
+        

@@ -1,0 +1,7 @@
+
+        main: function void() {
+            flag1: boolean = true;
+            flag2: boolean = false;
+            result: boolean = flag1 && flag2;
+        }
+        

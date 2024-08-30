@@ -1,0 +1,6 @@
+
+        main: function void() {
+            y: float = 3.14;
+            writeFloat(y);
+        }
+        

@@ -1,0 +1,14 @@
+
+        sum: function integer(a: integer, b: integer, c: integer) {
+            return a + b + c;
+        }
+        
+        product: function integer(a: integer, b: integer) {
+            return a * b;
+        }
+        
+        main: function void() {
+            result: integer;
+            result = sum(1, product(2, 3), 4);
+        }
+        

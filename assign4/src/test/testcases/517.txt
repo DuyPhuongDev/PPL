@@ -1,0 +1,10 @@
+
+        main: function void() {
+            y: float = 10.5;
+            if (10<5) {
+                y = y - 2.5;
+            } else {
+                y = y + 2.5;
+            }
+        }
+        

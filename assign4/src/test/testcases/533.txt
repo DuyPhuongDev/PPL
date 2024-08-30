@@ -1,0 +1,10 @@
+
+        isEven: function boolean(n: integer) {
+            return n % 2 == 0;
+        }
+        
+        main: function void() {
+            res: boolean;
+            res = isEven(4);
+        }
+        

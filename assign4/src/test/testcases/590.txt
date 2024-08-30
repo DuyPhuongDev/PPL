@@ -1,0 +1,13 @@
+
+        main: function void() {
+            arr: array[3, 2] of integer = {{1, 2}, {3, 4}, {5, 6}};
+            sum: integer = 0;
+            i: integer;
+            j: integer;
+            for (i = 0, i < 3, i + 1) {
+                for (j = 0, j < 2, j + 1) {
+                    sum = sum + arr[i, j];
+                }
+            }
+        }
+        

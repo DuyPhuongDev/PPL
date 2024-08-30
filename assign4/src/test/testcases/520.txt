@@ -1,0 +1,10 @@
+
+        main: function void() {
+            a: integer = 5;
+            if ((a % 2) == 0) {
+                a = a + 2;
+            } else {
+                a = a + 1;
+            }
+        }
+        

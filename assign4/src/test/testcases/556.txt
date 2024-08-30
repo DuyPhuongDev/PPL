@@ -1,0 +1,6 @@
+
+        main: function void() {
+            a: integer = 5;
+            b: integer = a + 10;
+        }
+        

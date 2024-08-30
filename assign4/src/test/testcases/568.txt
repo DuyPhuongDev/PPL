@@ -1,0 +1,14 @@
+
+        baseFunc: function void() {
+            printInteger(100);
+        }
+        
+        doubleFunc: function void() inherit baseFunc {
+            super();
+            printInteger(200);
+        }
+        
+        main: function void() {
+            doubleFunc();
+        }
+        

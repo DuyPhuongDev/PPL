@@ -1,0 +1,14 @@
+
+        baseFunc: function integer(a: integer, b: integer) {
+            return a - b;
+        }
+        
+        derivedFunc: function integer(a: integer, b: integer) inherit baseFunc {
+            return super(a, b) * 2;
+        }
+        
+        main: function void() {
+            y: integer;
+            y = derivedFunc(10, 3);
+        }
+        

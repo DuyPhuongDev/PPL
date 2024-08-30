@@ -1,0 +1,6 @@
+
+        main: function void() {
+            s: string = "abc";
+            result: string = s :: "123";
+        }
+        

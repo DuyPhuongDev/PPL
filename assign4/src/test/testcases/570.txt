@@ -1,0 +1,14 @@
+
+        parentFunc: function void() {
+            printBoolean(true);
+        }
+        
+        childFunc: function void() inherit parentFunc {
+            super();
+            printBoolean(false);
+        }
+        
+        main: function void() {
+            childFunc();
+        }
+        

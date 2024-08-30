@@ -1,0 +1,7 @@
+
+        main: function void() {
+            arr: array[2] of boolean = {true, false};
+            x: boolean;
+            x = arr[0] && arr[1];
+        }
+        
