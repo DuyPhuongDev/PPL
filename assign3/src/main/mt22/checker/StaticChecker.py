@@ -99,11 +99,12 @@ class StaticChecker(Visitor):
 
     ######  Expr  #####
     def visitBinExpr(self, ast, param):
-        #print('visit bin')
+        print('visit bin')
         ltype = self.visit(ast.left, param)
         rtype = self.visit(ast.right, param)
         #print(ltype, '-', rtype)
         if type(ltype) is AutoType:
+            print(self.typeinfer)
             if not self.typeinfer and type(rtype) is AutoType: return AutoType()
             elif type(rtype) is not AutoType: ltype = InferType.infer(ast.left.name,rtype,param)
         else:
@@ -112,7 +113,7 @@ class StaticChecker(Visitor):
             #print(ltype, rtype)
             #print(type(ltype) is AutoType and type(rtype) is AutoType)
             if type(ltype) is AutoType and type(rtype) is AutoType:
-                if type(self.typeinfer) not in [IntegerType, FloatType]: return None
+                if type(self.typeinfer) not in [IntegerType, FloatType]: raise TypeMismatchInExpression(ast)
                 #print(type(ast.left), '-', type(ast.right))
                 if type(ast.left) is Id:
                     ltype =  InferType.infer(ast.left.name, self.typeinfer, param)
@@ -604,7 +605,7 @@ class StaticChecker(Visitor):
                     if not found: raise Undeclared(Function() if type(ast.init) is FuncCall else Identifier(), ast.name) 
                 else:
                     self.typeinfer = ast.typ
-                    #print(self.typeinfer)
+                    print(self.typeinfer)
                 # visit again bin to infer type operand
                     tmp = self.visit(ast.init, param)
                     if not type(tmp): raise TypeMismatchInStatement(ast)
